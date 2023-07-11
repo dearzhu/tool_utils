@@ -36,3 +36,4 @@ def fun_del_unique(data):
     print('总共字段个数：{} 个，其中，唯一值>=0.9的个数：{}个，删除：{}个，剩余：{}个'.format(len(data.columns), len(del_col), len(del_col),
                                                                 len(other_col)))
     return data[other_col]
+
