@@ -26,4 +26,4 @@ def photo_size_press(path, num1, num2):
     # 调整图片质量并保存
     dir_, file_name = os.path.split(path)
     # 图片保存
-    image.save(os.path.join(dir_, file_name.split('.')[0] + '_ys.' + file_name.split('.')[1]), quality=120)
+    image.save(os.path.join(dir_, file_name.split('.')[0] + '_ys.' + file_name.split('.')[1]), quality=70)
