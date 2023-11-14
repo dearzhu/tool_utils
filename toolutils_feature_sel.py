@@ -5,6 +5,7 @@
 @Author  ：zsx
 @Date    ：11/07/2023 22:28 
 '''
+import numpy as np
 
 
 def fun_del_loss(data):
@@ -60,6 +61,25 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
+def fun_solve_IV(data, col_list1, label):
+    woe_dict = {}
+    iv_dict = {}
+    if label in col_list1:
+        col_list1.remove(label)
+    good_cnt = data[data['label'] == 0].shape[0]
+    bad_cnt = data[data['label'] == 1].shape[0]
+    for col in col_list1:
+        value = data.groupby(by=[col, label])[label].count().unstack().reset_index().fillna(0)
+        value.rename(columns={0: 'good', 1: 'bad'}, inplace=True)
+        value['bad_woe'] = (value['bad'] + 1) / bad_cnt
+        value['good_woe'] = (value['good'] + 1) / good_cnt
+        value['woe_value'] = np.log(value['bad_woe'] / value['good_woe'])
+        value['iv_value'] = (value['bad_woe'] - value['good_woe']) * value['woe_value']
+        woe_dict[col] = value
+        iv_dict[col] = value['iv_value'].sum()
+    return woe_dict, iv_dict
+
+
 def fun_get_cols_vif(x_train):
     """
 
@@ -108,14 +128,13 @@ def fun_chose_corr_graph(df, to_num_cols, corr_threshold=0.6, metric_dict={}, on
                 corr_df['c2'].append(c2)
                 corr_df['corr'].append(cm_df.loc[cm_df['index'] == c1, c2].values[0])
     corr_df = pd.DataFrame(corr_df)
-    print(corr_df.head(2))
     corr_df = corr_df[corr_df['corr'] > corr_threshold].copy().reset_index()
     del corr_df['index']
     data = corr_df.copy()
     del corr_df
     node_list = data['c1'].append(data['c2']).unique()
     G = nx.Graph()
-    G.add_edges_from(node_list)
+    G.add_nodes_from(node_list)
     for i in range(data.shape[0]):
         if i % 1000 == 0:
             if not slient:
@@ -151,6 +170,7 @@ def fun_chose_corr_graph(df, to_num_cols, corr_threshold=0.6, metric_dict={}, on
             graph_cols = [sorted(zip(graph_cols.values(), graph_cols.keys()), reverse=True)[0]]
         else:
             if len(sg) >= 10:
+                print(graph_cols)
                 graph_cols = sorted(zip(graph_cols.values(), graph_cols.keys()), reverse=True)[0:4]
             elif len(sg) >= 5:
                 graph_cols = sorted(zip(graph_cols.values(), graph_cols.keys()), reverse=True)[0:3]
@@ -175,4 +195,4 @@ def fun_chose_corr_graph(df, to_num_cols, corr_threshold=0.6, metric_dict={}, on
     print('按照强相关性阈值构造强相关性关系网中的变量数量：', len(graphs_nodes))
     print('选出强相关性关系网中的变量数量：', len(list(choosed_nodes)))
     print('最终选出的变量数量：', len(list(set(metric_dict.keys()) - set(graphs_nodes)) + list(choosed_nodes)))
-    return list(set(metric_dict.leys()) - set(graphs_nodes)) + list(choosed_nodes)
+    return list(set(metric_dict.keys()) - set(graphs_nodes)) + list(choosed_nodes)
