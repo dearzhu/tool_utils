@@ -49,8 +49,6 @@ def fun_reduce_mem_usage(df):
 
 ##离散变量与连续变量区分
 def fun_category_continue_separation(df, feature_names, label):
-    categorical_var = []
-    numerical_var = []
     if label in feature_names:
         feature_names.remove(label)
     ##先判断类型，如果是int或float就直接作为连续变量
