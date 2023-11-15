@@ -28,7 +28,7 @@ def fun_del_unique(data, tag, flag, thred):
     :param data: 数据源
     :param tag: 标签
     :param flag: flag,用来判断执行哪个统计方式1，整体，2分组
-    :param thred: 阈值
+    :param thred: 阈值选择
     :return:
     """
     good_cnt = data[data[tag] == 0].shape[0]
