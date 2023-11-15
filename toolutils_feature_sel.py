@@ -22,18 +22,37 @@ def fun_del_loss(data):
     return other_col
 
 
-def fun_del_unique(data):
+def fun_del_unique(data, tag, flag, thred):
     """
-    根据唯一值过滤特征
+    不同方式判断唯一值
     :param data: 数据源
-    :return: 返回唯一值小于90%的数据源
+    :param tag: 标签
+    :param flag: flag,用来判断执行哪个统计方式1，整体，2分组
+    :param thred: 阈值
+    :return:
     """
+    good_cnt = data[data[tag] == 0].shape[0]
+    bad_cnt = data[data[tag] == 1].shape[0]
     del_col = []
-    for col in data.columns:
-        unique_value = data[col].value_counts(normalize=True)
-        if len(unique_value[unique_value >= 0.9].index) != 0:
-            del_col.append(col)
+    col_list = list(data.columns)
+    if tag in col_list:
+        col_list.remove(tag)
+    for col in col_list:
+        print(col)
+        if flag == 1:
+            unique_value = data[col].value_counts(normalize=True)
+            if len(unique_value[unique_value >= thred].index) != 0:
+                del_col.append(col)
+        elif flag == 2:
+            df_tmp = data.groupby(by=[col, tag])[col].count().unstack().reset_index()
+            df_tmp.rename(columns={0: 'good', 1: 'bad'}, inplace=True)
+            df_tmp['good_rate'] = df_tmp['good'] / good_cnt
+            df_tmp['bad_rate'] = df_tmp['bad'] / bad_cnt
+            if df_tmp[(df_tmp['good_rate'] >= thred) & (df_tmp['bad_rate'] >= thred)].shape[0] == 0:
+                del_col.append(col)
+
     other_col = list(set(data.columns) - set(del_col))
+
     print('总共字段个数：{} 个，其中，唯一值>=0.9的个数：{}个，删除：{}个，剩余：{}个'.format(len(data.columns), len(del_col), len(del_col),
                                                                 len(other_col)))
     return other_col
