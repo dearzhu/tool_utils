@@ -16,6 +16,8 @@ def fun_reduce_mem_usage(df):
     :param df:
     :return:
     """
+    print('*' * 40, '数据压缩')
+
     start_mem = df.memory_usage().sum() / 1024 ** 2
     print('Memory usage of dateframe is {:.2f} MB'.format(start_mem))
     for col in df.columns:
@@ -48,11 +50,16 @@ def fun_reduce_mem_usage(df):
 
 
 ##离散变量与连续变量区分
-def fun_category_continue_separation(df, feature_names, label):
+def fun_category_continue_separation(df, label):
+    print('*' * 40, '变量类型选择')
+    feature_names = list(df.columns)
     if label in feature_names:
         feature_names.remove(label)
     ##先判断类型，如果是int或float就直接作为连续变量
-    numerical_var = list(df[feature_names].select_dtypes(
-        include=['int', 'float', 'int32', 'float32', 'int64', 'float64']).columns.values)
+    numerical_var = list(
+        df[feature_names].select_dtypes(
+            include=['int', 'int8','int16', 'int32', 'int64', 'float', 'float8','float16', 'float32', 'float64']).columns)
     categorical_var = [x for x in feature_names if x not in numerical_var]
+    print('numerical_var', numerical_var)
+    print('categorical_var: {} 个，numerical_var：{} 个'.format(len(categorical_var), len(numerical_var)))
     return categorical_var, numerical_var
