@@ -58,7 +58,7 @@ def fun_category_continue_separation(df, label):
     ##先判断类型，如果是int或float就直接作为连续变量
     numerical_var = list(
         df[feature_names].select_dtypes(
-            include=['int', 'int8','int16', 'int32', 'int64', 'float', 'float16', 'float32', 'float64']).columns)
+            include=['int', 'int8', 'int16', 'int32', 'int64', 'float', 'float16', 'float32', 'float64']).columns)
     categorical_var = [x for x in feature_names if x not in numerical_var]
     print('numerical_var', numerical_var)
     print('categorical_var: {} 个，numerical_var：{} 个'.format(len(categorical_var), len(numerical_var)))
