@@ -62,3 +62,4 @@ def fun_category_continue_separation(df, label):
     categorical_var = [x for x in feature_names if x not in numerical_var]
     print('categorical_var: {} 个，numerical_var：{} 个'.format(len(categorical_var), len(numerical_var)))
     return categorical_var, numerical_var
+
