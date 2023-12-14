@@ -51,7 +51,7 @@ def fun_reduce_mem_usage(df):
 
 ##离散变量与连续变量区分
 def fun_category_continue_separation(df, label):
-    print('*' * 45, '变量类型选择')
+    print('*' * 40, '变量类型选择')
     feature_names = list(df.columns)
     if label in feature_names:
         feature_names.remove(label)
@@ -63,3 +63,17 @@ def fun_category_continue_separation(df, label):
     print('categorical_var: {} 个，numerical_var：{} 个'.format(len(categorical_var), len(numerical_var)))
     return categorical_var, numerical_var
 
+
+def fun_get_woe_IV(data):
+    """
+    计算WOE、IV值
+    :param data:
+    :return:
+    """
+    good_num = data['good'].sum()
+    bad_num = data['bad'].sum()
+    data['bad_woe'] = (data['bad'] + 1) / bad_num
+    data['good_woe'] = (data['good'] + 1) / good_num
+    data['woe_value'] = np.log(data['bad_woe'] / data['good_woe'])
+    data['iv_value'] = (data['bad_woe'] - data['good_woe']) * data['woe_value']
+    return data, data['iv_value'].sum()
