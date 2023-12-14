@@ -50,12 +50,13 @@ def fun_del_unique(data, tag, flag, thred):
             df_tmp['bad_rate'] = df_tmp['bad'] / bad_cnt
             if df_tmp[(df_tmp['good_rate'] >= thred) & (df_tmp['bad_rate'] >= thred)].shape[0] == 0:
                 del_col.append(col)
-
     other_col = list(set(data.columns) - set(del_col))
 
     print('总共字段个数：{} 个，其中，唯一值>=0.9的个数：{}个，删除：{}个，剩余：{}个'.format(len(data.columns), len(del_col), len(del_col),
                                                                 len(other_col)))
     return other_col
+
+
 
 
 from sklearn.feature_selection import VarianceThreshold
