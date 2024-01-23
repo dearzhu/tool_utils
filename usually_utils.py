@@ -50,16 +50,22 @@ def fun_reduce_mem_usage(df):
 
 
 ##离散变量与连续变量区分
-def fun_category_continue_separation(df, label):
+def fun_category_continue_separation(df, feature_names_list, label):
+    """
+    筛选离散连续变量
+    :param df:数据源
+    :param feature_names_list: 特征字段列表
+    :param label:标签值
+    :return:离散变量、连续变量
+    """
     print('*' * 40, '变量类型选择')
-    feature_names = list(df.columns)
-    if label in feature_names:
-        feature_names.remove(label)
+    if label in feature_names_list:
+        feature_names_list.remove(label)
     ##先判断类型，如果是int或float就直接作为连续变量
     numerical_var = list(
-        df[feature_names].select_dtypes(
+        df[feature_names_list].select_dtypes(
             include=['int', 'int8', 'int16', 'int32', 'int64', 'float', 'float16', 'float32', 'float64']).columns)
-    categorical_var = [x for x in feature_names if x not in numerical_var]
+    categorical_var = [x for x in feature_names_list if x not in numerical_var]
     print('categorical_var: {} 个，numerical_var：{} 个'.format(len(categorical_var), len(numerical_var)))
     return categorical_var, numerical_var
 
