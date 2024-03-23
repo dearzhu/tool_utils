@@ -83,3 +83,31 @@ def fun_get_woe_IV(data):
     data['woe_value'] = np.log(data['bad_woe'] / data['good_woe'])
     data['iv_value'] = (data['bad_woe'] - data['good_woe']) * data['woe_value']
     return data, data['iv_value'].sum()
+
+
+def fun_Cramers_V(data, col, label, cnt_col):
+    """
+    计算克莱姆法则相关系数，无序的离散变量
+    :param data:数据源
+    :param col:离散变量
+    :param label:因变量
+    :param cnt_col:计算数量的字段
+    :return:克莱姆相关系数
+    """
+    df_tmp = pd.pivot_table(data=data, index=label, columns=col, values=cnt_col, aggfunc=len)
+    df_tmp_E = pd.DataFrame()
+    df_tmp_r = df_tmp.sum(axis=1)
+    df_tmp_c = df_tmp.sum(axis=0)
+    for index_r in df_tmp_r.index:
+        for index_c in df_tmp_c.index:
+            df_tmp_E.loc[index_r, index_c] = df_tmp_c[index_c] * df_tmp_r[index_r] / df_tmp_r.sum()
+    df_tmp_tj = pd.DataFrame()
+    for index_c in df_tmp.index:
+        for index_r in df_tmp.columns:
+            df_tmp_tj.loc[index_c, index_r] = (df_tmp.loc[index_c, index_r] - df_tmp_E.loc[index_c, index_r]) ** 2 / \
+                                              df_tmp_E.loc[index_c, index_r]
+    value_ = np.sqrt(df_tmp_tj.sum().sum() / df_tmp.sum().sum() * (min(df_tmp.shape) - 1))
+    return value_
+
+
+value_ = fun_Cramers_V(data=data, label='sex', cnt_col='cnt', col='label')
